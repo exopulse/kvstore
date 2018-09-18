@@ -33,19 +33,29 @@ err := manager.Open()
 defer manager.Close()
 
 err := manager.Update(func(trx *kvstore.Trx) error {
-	if err := trx.InitializeBucket("messages"); err != nil {
-		return err
-	}
+    if err := trx.InitializeBucket("messages"); err != nil {
+        return err
+    }
+    
+    if err := trx.InitializeBucket("customers"); err != nil {
+        return err
+    }
+    
+    return nil
+})
 
-	if err := trx.InitializeBucket("customers"); err != nil {
-		return err
-	}
-
-	user, err := trx.Create("users", func(id kvstore.ID) interface{} {
-        	return newUser(id)
-	})
-
-	return nil
+err := manager.Update(func(trx *kvstore.Trx) error {
+    user, err := trx.Create("users", func(id kvstore.ID) interface{} {
+        return newUser(id)
+    })
+    
+    if err != nil {
+        return err
+    }
+    
+    fmt.Println(user)
+    
+    return nil
 })
 
 ```
