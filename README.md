@@ -41,9 +41,9 @@ err := manager.Update(func(trx *kvstore.Trx) error {
 		return err
 	}
 
-    user, err := trx.Create("users", func(id kvstore.ID) interface{} {
-        return newUser(id)
-    })
+	user, err := trx.Create("users", func(id kvstore.ID) interface{} {
+        	return newUser(id)
+	})
 
 	return nil
 })
