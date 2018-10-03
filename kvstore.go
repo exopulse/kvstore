@@ -126,7 +126,7 @@ func (t *Trx) Put(bucket string, id ID, object interface{}) error {
 	return nil
 }
 
-// Fetch fetches object specified by ID and stores it into receiver.
+// Fetch fetches object specified by ID.
 func (t *Trx) Fetch(bucket string, id ID, receiver interface{}) error {
 	b := t.tx.Bucket([]byte(bucket))
 	bytes := b.Get(idtob(id))
@@ -136,6 +136,13 @@ func (t *Trx) Fetch(bucket string, id ID, receiver interface{}) error {
 	}
 
 	return json.Unmarshal(bytes, &receiver)
+}
+
+// Delete deletes object specified by ID.
+func (t *Trx) Delete(bucket string, id ID) error {
+	b := t.tx.Bucket([]byte(bucket))
+
+	return b.Delete(idtob(id))
 }
 
 // InitializeBucket creates bucket if one does not exist.
