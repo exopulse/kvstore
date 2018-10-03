@@ -145,6 +145,30 @@ func (t *Trx) Delete(bucket string, id ID) error {
 	return b.Delete(idtob(id))
 }
 
+// Snapshot takes snapshot of current bucket contents. Ctor is called to provide placeholder for each object found.
+func (t *Trx) Snapshot(bucket string, ctor func() interface{}) ([]interface{}, error) {
+	objects := make([]interface{}, 0)
+	b := t.tx.Bucket([]byte(bucket))
+
+	err := b.ForEach(func(k, v []byte) error {
+		object := ctor()
+
+		if err := json.Unmarshal(v, &object); err != nil {
+			return err
+		}
+
+		objects = append(objects, object)
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return objects, nil
+}
+
 // InitializeBucket creates bucket if one does not exist.
 func (t *Trx) InitializeBucket(bucket string) error {
 	_, err := t.tx.CreateBucketIfNotExists([]byte(bucket))
