@@ -110,6 +110,22 @@ func (t *Trx) Create(bucket string, idReceiver func(id ID) interface{}) (interfa
 	return object, nil
 }
 
+// Put puts object specified by ID and stores it into receiver.
+func (t *Trx) Put(bucket string, id ID, object interface{}) error {
+	b := t.tx.Bucket([]byte(bucket))
+	bytes, err := json.Marshal(object)
+
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal object to JSON")
+	}
+
+	if err := b.Put(idtob(id), bytes); err != nil {
+		return errors.Wrap(err, "failed to put object to bucket")
+	}
+
+	return nil
+}
+
 // Fetch fetches object specified by ID and stores it into receiver.
 func (t *Trx) Fetch(bucket string, id ID, receiver interface{}) error {
 	b := t.tx.Bucket([]byte(bucket))
